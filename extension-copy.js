@@ -16,9 +16,17 @@ function activate(context) {
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with  registerCommand
   // The commandId parameter must match the command field in package.json
+  let disposable = vscode.commands.registerCommand(
+    "easydocs.helloWorld",
+    function () {
+      // The code you place here will be executed every time your command is executed
 
-  let insertDocumentation = vscode.commands.registerCommand(
-    "easydocs.insertDocs",
+      // Display a message box to the user
+      vscode.window.showInformationMessage("Halla på deg!");
+    }
+  );
+  let newExt = vscode.commands.registerCommand(
+    "easydocs.popup",
     async function () {
       let variableAmount = 0;
       // ------------
@@ -27,34 +35,28 @@ function activate(context) {
         value: "",
         placeHolder: "Short description",
       });
-      console.log({ variableAmount });
 
-      let paramResult = await vscode.window.showInputBox({
+      let variableAmountResult = await vscode.window.showInputBox({
         value: "",
-        placeHolder: "Type in param - empty string for none ",
+        placeHolder: "How many params?",
+        validateInput: (text) => {},
       });
+      // ------------
 
       // ------------
 
-      let returnsResult = await vscode.window.showQuickPick(
-        ["Object", "Array", "Boolean", "Number", "String"],
-        { placeHolder: "What does it return?" }
-      );
-
-      let exampleResult = await vscode.window.showInputBox({
-        value: "",
-        placeHolder: "Example: ",
-      });
       //   let quickPicker = await vscode.window.showQuickPick(["1", "2", "3"], {});
 
       // ------------
 
       // ------------
+      let paramResult = "111paramResult111";
+      let returnsResult = "111returnsResult111";
+
       let startLine = vscode.window.activeTextEditor.selection.start.line;
       var selection = vscode.window.activeTextEditor.selection;
-      console.log({ startLine, selection });
-      let position = new vscode.Position(1, 1);
-      let insertion = `/**\n * Description: ${descriptionResult}\n * @param {${paramResult}}\n * @returns ${returnsResult}\n * @example ${exampleResult}\n */ \n \n `;
+      let position = new vscode.Position(startLine, selection.start.character);
+      let insertion = `/**\n * ${descriptionResult}\n * @param ${paramResult}\n * @returns ${returnsResult}\n * @example {exampleResult}\n */`;
       return vscode.window.activeTextEditor.edit((editBuilder) => {
         editBuilder.insert(position, insertion);
       });
@@ -63,7 +65,8 @@ function activate(context) {
     }
   );
 
-  context.subscriptions.push(insertDocumentation);
+  context.subscriptions.push(disposable);
+  context.subscriptions.push(newExt);
 }
 
 // this method is called when your extension is deactivated
